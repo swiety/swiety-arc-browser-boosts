@@ -1,3 +1,23 @@
+function offerToWiki(offer) {
+    let adv = offer.advertiser;
+    let advWiki = adv.url ? `[${adv.name}](${adv.url})` : `\`${adv.name}\``
+    advWiki = `
+- ${adv.type}: ${advWiki}
+- tel. [${adv.telephone.display}](${adv.telephone.href})
+`.trim();
+
+    let wiki = `
+### ${offer.dateAdded} ${offer.shortAdDesc}: ${offer.priceEurMonthly} €/month
+- ![|200](${offer.imageUrl})
+- Listing reference: \`${offer.reference}\`
+${advWiki}
+- [${offer.title}](${offer.url})
+- ${offer.location}
+- ${offer.description}
+`.trim();
+    return wiki;
+}
+
 function waitForElement(selector, callback) {
     const interval = setInterval(() => {
         const element = document.querySelector(selector);
@@ -55,10 +75,10 @@ function parseIdealistaOffer() {
     let title = document.title;
     let shortAdDesc = document.querySelector("section.detail-info > section.detail-content-wrapper > div.main-info__title > h1 > span").innerHTML;
     let canonicalUrl = document.querySelector("head > meta[property=\"og:url\"]").content;
-    let image_url = document.querySelector("div.main-image > div.main-image_first > picture > source[type=\"image/jpeg\"]").srcset;
+    let imageUrl = document.querySelector("div.main-image > div.main-image_first > picture > source[type=\"image/jpeg\"]").srcset;
     let reference = document.querySelector("div.ad-reference-container > p.txt-ref").innerHTML.trim();
     let advertiser = parseAdvertiser();
-    let price_eur_monthly = parseInt(document.querySelector("section.detail-info > section.detail-content-wrapper > div.info-data > span.info-data-price > span").innerHTML);
+    let priceEurMonthly = parseInt(document.querySelector("section.detail-info > section.detail-content-wrapper > div.info-data > span.info-data-price > span").innerHTML);
     let dateAdded = parseDateAdded();
     let location = document.querySelector("section.detail-info > section.detail-content-wrapper > div.main-info__title > span.main-info__title-block > span.main-info__title-minor").innerHTML;
     let locationUrl = parseLocationUrl();
@@ -69,10 +89,10 @@ function parseIdealistaOffer() {
         "title": title,
         "shortAdDesc": shortAdDesc,
         "canonicalUrl": canonicalUrl,
-        "image_url": image_url,
+        "imageUrl": imageUrl,
         "reference": reference,
         "advertiser": advertiser,
-        "price_eur_monthly": price_eur_monthly,
+        "priceEurMonthly": priceEurMonthly,
         "dateAdded": dateAdded,
         "location": location,
         "locationUrl": locationUrl,
@@ -80,6 +100,7 @@ function parseIdealistaOffer() {
     }
 
     console.log("Idealista offer", offer);
+    console.log(offerToWiki(offer));
 }
 
 function fetchPhoneNumber() {
