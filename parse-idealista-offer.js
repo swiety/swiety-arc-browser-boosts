@@ -1,3 +1,6 @@
+// URL: https://www.idealista.com/en/inmueble/109353808/?utm_medium=email&utm_campaign=express_newAd_rent_professional&utm_campaigntype=retention&utm_project=adNotification&utm_source=alerts-id&utm_date_send=2025-09-22T110719&utm_link=propertyNewPhoto&utm_recipient_id=OMBwrrUL5DtD6OHgmuEZn0ELCSQ03jnI6tHdoiTKcE0%3D
+// TODO: test with https://github.com/jsdom/jsdom example: https://dev.to/thawkin3/how-to-unit-test-html-and-vanilla-javascript-without-a-ui-framework-4io
+
 function offerToWiki(offer) {
     let adv = offer.advertiser;
     let advWiki = adv.url ? `[${adv.name}](${adv.url})` : `\`${adv.name}\``
