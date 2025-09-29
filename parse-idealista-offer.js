@@ -50,13 +50,7 @@ function parseLocationUrl() {
     // src="https://maps.googleapis.com/maps/api/staticmap?
     // size=742x330&
     // center=37.88488790%2C-0.75529410&
-    // maptype=roadmap&
-    // channel=map_detail&
-    // scale=2&
-    // zoom=16&
-    // key=AIzaSyAnYQ7HhFNWVPzGf_zFf4nFyuxKE1Al7s0&
-    // markers=scale%3A1%7Cicon%3Ahttps%3A%2F%2Fst3.idealista.com%2Fstatic%2Fcommon%2Fimg%2Ficons%2Fmap%2Ffav_with.png%7C37.8848879%2C-0.7552941&
-    // signature=Uzjdh28V_gZ_avtgyzWb3xg_vQc="
+    // ...
     // https://www.google.com/maps/place/37.88488790%2C-0.75529410
     let mapSrc = document.querySelector("#sMap").src;
     let mapCenter = URL.parse(mapSrc).searchParams.get("center");
