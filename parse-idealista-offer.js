@@ -9,13 +9,14 @@ function offerToWiki(offer) {
 - tel. [${adv.telephone.display}](${adv.telephone.href})
 `.trim();
 
+    let locationMap = offer.locationUrl ? `  [View map](${offer.locationUrl})` : '';
     let wiki = `
 ### ${offer.dateAdded} ${offer.shortAdDesc}: ${offer.priceEurMonthly} €/month
 - ![|200](${offer.imageUrl})
 - Listing reference: \`${offer.reference}\`
 ${advWiki}
 - [${offer.title}](${offer.url})
-- ${offer.location}
+- ${offer.location}${locationMap}
 - ${offer.description}
 `.trim();
     return wiki;
@@ -28,7 +29,7 @@ function waitForElement(selector, callback) {
             clearInterval(interval);
             callback(element);
         } else {
-            console.log("Czekan na element: ", selector);
+            console.log("Czekam na element: ", selector);
         }
     }, 100); // Check every 100ms
 }
@@ -45,7 +46,21 @@ function parseLocationUrl() {
     if (null != noAddress) {
         return null;
     }
-    return "https://TODO:LOCATION-PARSING/";
+    // document.querySelector("#sMap").src
+    // src="https://maps.googleapis.com/maps/api/staticmap?
+    // size=742x330&
+    // center=37.88488790%2C-0.75529410&
+    // maptype=roadmap&
+    // channel=map_detail&
+    // scale=2&
+    // zoom=16&
+    // key=AIzaSyAnYQ7HhFNWVPzGf_zFf4nFyuxKE1Al7s0&
+    // markers=scale%3A1%7Cicon%3Ahttps%3A%2F%2Fst3.idealista.com%2Fstatic%2Fcommon%2Fimg%2Ficons%2Fmap%2Ffav_with.png%7C37.8848879%2C-0.7552941&
+    // signature=Uzjdh28V_gZ_avtgyzWb3xg_vQc="
+    // https://www.google.com/maps/place/37.88488790%2C-0.75529410
+    let mapSrc = document.querySelector("#sMap").src;
+    let mapCenter = URL.parse(mapSrc).searchParams.get("center");
+    return `https://www.google.com/maps/place/${encodeURIComponent(mapCenter)}`;
 }
 
 function parseDescription() {
@@ -106,12 +121,21 @@ function parseIdealistaOffer() {
     console.log(offerToWiki(offer));
 }
 
+function ensureMapVisible() {
+    window.scrollTo(0, document.body.scrollHeight);
+    waitForElement("#sMap", (element) => {
+        console.log('Map rendered:', element);
+        window.scrollTo(0, 0);
+        parseIdealistaOffer();
+    })
+}
+
 function fetchPhoneNumber() {
     let button = document.querySelector("#contact-phones-container > a.see-phones-btn.icon-phone-outline.hidden-contact-phones_link > span.hidden-contact-phones_text");
     button.click();
     waitForElement('#contact-phones-container > a._mobilePhone', (element) => {
-        console.log('Element exists:', element);
-        parseIdealistaOffer();
+        console.log('Telephone number rendered:', element);
+        ensureMapVisible();
     });
 }
 
