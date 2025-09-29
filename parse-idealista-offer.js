@@ -58,7 +58,7 @@ function parseAdvertiser() {
     let cdc = document.querySelector("div.contact-data-container");
     let type = cdc.querySelector("div.professional-name > div.name").textContent.trim();
     let name = cdc.querySelector("div.professional-name > span").textContent.trim();
-    let url = document.querySelector("div.about-container > div.advertiser-name-container > a.about-advertiser-name").href;
+    let url = document.querySelector("div.about-container > div.advertiser-name-container > a.about-advertiser-name")?.href;
     let tel = document.querySelector("#contact-phones-container > a._mobilePhone");
     let telHref = tel.href;
     let telDisplay = tel.textContent.trim();
