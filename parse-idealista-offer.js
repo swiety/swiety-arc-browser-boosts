@@ -15,7 +15,7 @@ function offerToWiki(offer) {
 - ![|200](${offer.imageUrl})
 - Listing reference: \`${offer.reference}\`
 ${advWiki}
-- [${offer.title}](${offer.url})
+- [${offer.title}](${offer.canonicalUrl})
 - ${offer.location}${locationMap}
 - ${offer.description}
 `.trim();
