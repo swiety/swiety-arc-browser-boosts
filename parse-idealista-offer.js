@@ -90,7 +90,9 @@ function parseIdealistaOffer() {
     let imageUrl = document.querySelector("div.main-image > div.main-image_first > picture > source[type=\"image/jpeg\"]").srcset;
     let reference = document.querySelector("div.ad-reference-container > p.txt-ref").innerHTML.trim();
     let advertiser = parseAdvertiser();
-    let priceEurMonthly = parseInt(document.querySelector("section.detail-info > section.detail-content-wrapper > div.info-data > span.info-data-price > span").innerHTML);
+    let priceEurMonthly = document.querySelector(
+        "section.detail-info > section.detail-content-wrapper > div.info-data > span.info-data-price > span")
+        .innerHTML;
     let dateAdded = parseDateAdded();
     let location = document.querySelector("section.detail-info > section.detail-content-wrapper > div.main-info__title > span.main-info__title-block > span.main-info__title-minor").innerHTML;
     let locationUrl = parseLocationUrl();
