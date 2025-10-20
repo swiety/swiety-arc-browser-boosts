@@ -132,6 +132,7 @@ function parseIdealistaOffer() {
 
     console.log("Idealista offer", offer);
     console.log(offerToWiki(offer));
+    return offerToWiki(offer);
 }
 
 function ensureMapVisible() {
@@ -139,8 +140,20 @@ function ensureMapVisible() {
     waitForElement("#sMap", (element) => {
         console.log('Map rendered:', element);
         window.scrollTo(0, 0);
-        parseIdealistaOffer();
     })
+}
+
+function addCopyToClipboardButton() {
+    let parent = document.getElementById('side-content');
+    let button = document.createElement('button');
+    button.innerHTML = 'Copy to clipboard';
+    parent.insertBefore(button, parent.firstChild);
+    function onclick() {
+        let wiki = parseIdealistaOffer();
+        navigator.clipboard.writeText(wiki);
+        button.style.backgroundColor = "green";
+    }
+    button.addEventListener('click', onclick);
 }
 
 function fetchPhoneNumber() {
@@ -152,6 +165,9 @@ function fetchPhoneNumber() {
         console.log('Telephone number rendered:', element);
         ensureMapVisible();
     });
+    addCopyToClipboardButton();
 }
+
+
 
 window.addEventListener('load', fetchPhoneNumber);
