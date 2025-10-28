@@ -27,13 +27,14 @@ ${advWiki}
 }
 
 function waitForElement(selector, callback, action = null) {
+    let counter = 20;
     const interval = setInterval(() => {
         const element = document.querySelector(selector);
-        if (element) {
+        if (element || 0 === counter--) {
             clearInterval(interval);
             callback(element);
         } else {
-            console.log("Czekam na element: ", selector);
+            console.log(`Czekam na element: ${selector}, zostało ${counter} prób.`);
             if (null !== action) {
                 console.log("Ponawiam akcję");
                 action();
