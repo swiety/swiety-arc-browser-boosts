@@ -6,10 +6,11 @@
 
 function offerToWiki(offer) {
     let adv = offer.advertiser;
+    let tel = (null === adv.telephone) ? "" : `- tel. [${adv.telephone.display}](${adv.telephone.href})`
     let advWiki = adv.url ? `[${adv.name}](${adv.url})` : `\`${adv.name}\``
     advWiki = `
 - ${adv.type}: ${advWiki}
-- tel. [${adv.telephone.display}](${adv.telephone.href})
+${tel}
 `.trim();
 
     let locationMap = offer.locationUrl ? `  [View map](${offer.locationUrl})` : '';
@@ -25,7 +26,7 @@ ${advWiki}
     return wiki;
 }
 
-function waitForElement(selector, callback) {
+function waitForElement(selector, callback, action = null) {
     const interval = setInterval(() => {
         const element = document.querySelector(selector);
         if (element) {
@@ -33,6 +34,10 @@ function waitForElement(selector, callback) {
             callback(element);
         } else {
             console.log("Czekam na element: ", selector);
+            if (null !== action) {
+                console.log("Ponawiam akcję");
+                action();
+            }
         }
     }, 100); // Check every 100ms
 }
@@ -77,16 +82,15 @@ function parseAdvertiser() {
         "div.about-container > div.advertiser-name-container > a.about-advertiser-name")
         ?.href;
     let tel = document.querySelector("#contact-phones-container > a._mobilePhone");
-    let telHref = tel.href;
-    let telDisplay = tel.textContent.trim();
+    let telDetails = (null === tel) ? null : {
+        "href": tel.href,
+        "display": tel.textContent.trim(),
+    }
     return {
         "type": type,
         "name": name,
         "url": url,
-        "telephone": {
-            "href": telHref,
-            "display": telDisplay,
-        }
+        "telephone": telDetails
     }
 }
 
@@ -136,10 +140,13 @@ function parseIdealistaOffer() {
 }
 
 function ensureMapVisible() {
+    console.log("Scrolluję w dół żeby zobaczyć mapę");
     window.scrollTo(0, document.body.scrollHeight);
     waitForElement("#sMap", (element) => {
         console.log('Map rendered:', element);
         window.scrollTo(0, 0);
+    }, () => {
+        window.scrollTo(0, document.body.scrollHeight);
     })
 }
 
@@ -160,11 +167,15 @@ function fetchPhoneNumber() {
     let button = document.querySelector(
         "#contact-phones-container > a.see-phones-btn.icon-phone-outline.hidden-contact-phones_link > " +
         "span.hidden-contact-phones_text");
-    button.click();
-    waitForElement('#contact-phones-container > a._mobilePhone', (element) => {
-        console.log('Telephone number rendered:', element);
+    if (null !== button) {
+        button.click();
+        waitForElement('#contact-phones-container > a._mobilePhone', (element) => {
+            console.log('Telephone number rendered:', element);
+            ensureMapVisible();
+        });
+    } else {
         ensureMapVisible();
-    });
+    }
     addCopyToClipboardButton();
 }
 
