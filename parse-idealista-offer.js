@@ -12,10 +12,10 @@ function offerToWiki(offer) {
 - ${adv.type}: ${advWiki}
 ${tel}
 `.trim();
-
     let locationMap = offer.locationUrl ? `  [View map](${offer.locationUrl})` : '';
-    let wiki = `
-### ${offer.dateAdded} ${offer.shortAdDesc}: ${offer.priceEurMonthly} €/month
+    let dateAdded = null !== offer.dateAdded ? `{$offer.dateAdded} ` : '';
+    return `
+### ${dateAdded}${offer.shortAdDesc}: ${offer.priceEurMonthly} €/month
 - ![|200](${offer.imageUrl})
 - Listing reference: \`${offer.reference}\`
 ${advWiki}
@@ -23,7 +23,6 @@ ${advWiki}
 - ${offer.location}${locationMap}
 - ${offer.description}
 `.trim();
-    return wiki;
 }
 
 function waitForElement(selector, callback, action = null) {
@@ -47,8 +46,8 @@ function parseDateAdded() {
     let utmDateSend = URL.parse(document.querySelector(
         "link[rel=\"alternate\"][hreflang=\"x-default\"]").href).searchParams.get("utm_date_send");
     let rx = /^(20[0-9]{2}-[0-9]{2}-[0-9]{2})T[0-9]{6}/g;
-    let dateAdded = rx.exec(utmDateSend)[1];
-    return dateAdded;
+    let result = rx.exec(utmDateSend);
+    return null !== result ? result[1] : null;
 }
 
 function parseLocationUrl() {
@@ -71,8 +70,7 @@ function parseDescription() {
     let nodes = document.querySelectorAll(
         "section.detail-info > section.detail-content-wrapper > div:is(.info-features,.detail-info-tags) > " +
         "span");
-    let description = Array.prototype.map.call(nodes, node => node.textContent.trim()).join(", ");
-    return description;
+    return Array.prototype.map.call(nodes, node => node.textContent.trim()).join(", ");
 }
 
 function parseAdvertiser() {
@@ -158,7 +156,7 @@ function addCopyToClipboardButton() {
     parent.insertBefore(button, parent.firstChild);
     function onclick() {
         let wiki = parseIdealistaOffer();
-        navigator.clipboard.writeText(wiki);
+        navigator.clipboard.writeText(wiki).then(() => {});
         button.style.backgroundColor = "green";
     }
     button.addEventListener('click', onclick);
