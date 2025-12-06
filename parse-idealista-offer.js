@@ -13,7 +13,7 @@ function offerToWiki(offer) {
 ${tel}
 `.trim();
     let locationMap = offer.locationUrl ? `  [View map](${offer.locationUrl})` : '';
-    let dateAdded = null !== offer.dateAdded ? `{$offer.dateAdded} ` : '';
+    let dateAdded = null !== offer.dateAdded ? `${offer.dateAdded} ` : '';
     return `
 ### ${dateAdded}${offer.shortAdDesc}: ${offer.priceEurMonthly} €/month
 - ![|200](${offer.imageUrl})
