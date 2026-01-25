@@ -1,7 +1,7 @@
 /*
  Arc Browser boost for Rallly polls that sorts date columns by weighted attendance score.
  Weights: Yes = 1.0, If Need Be = 0.7, No = -0.3
- Sorts highest score on left, lowest on right. Equal scores sorted chronologically.
+ Sorts highest score on left, lowest on right. Equal scores maintain initial page order.
  */
 
 const WEIGHTS = {
@@ -9,36 +9,6 @@ const WEIGHTS = {
     'If Need Be': 0.7,
     'No': -0.3
 };
-
-function parseDateFromColumn(column) {
-    // Try to find date text in the column header
-    const header = column.querySelector('th, [class*="header"], [class*="date"], [class*="column-header"]');
-    if (header) {
-        const text = header.textContent.trim();
-        // Try to parse common date formats
-        const dateMatch = text.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-        if (dateMatch) {
-            return new Date(dateMatch[3], dateMatch[2] - 1, dateMatch[1]);
-        }
-        // Try ISO format
-        const isoMatch = text.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-        if (isoMatch) {
-            return new Date(isoMatch[1], isoMatch[2] - 1, isoMatch[3]);
-        }
-    }
-    
-    // Fallback: use data attributes or other indicators
-    const dataDate = column.getAttribute('data-date') || column.getAttribute('data-id');
-    if (dataDate) {
-        const parsed = new Date(dataDate);
-        if (!isNaN(parsed.getTime())) {
-            return parsed;
-        }
-    }
-    
-    // Last resort: return current date to maintain order
-    return new Date();
-}
 
 function sortColumnsByAttendance() {
     console.info('Starting Rallly column sorting by attendance...');
@@ -73,7 +43,7 @@ function sortColumnsByAttendance() {
     // Get all data rows
     const dataRows = Array.from(table.querySelectorAll('tbody tr, tr:not(:first-child)'));
     
-    // Calculate scores and dates for each column
+    // Calculate scores for each column
     const columnData = dateColumns.map((headerCell, index) => {
         // For each column, we need to get all cells in that column position
         const columnCells = dataRows.map(row => {
@@ -109,28 +79,26 @@ function sortColumnsByAttendance() {
             }
         });
         
-        const date = parseDateFromColumn(headerCell);
-        console.debug(`Column ${index}: score=${score.toFixed(2)}, date=${date.toLocaleDateString()}`);
+        console.debug(`Column ${index}: score=${score.toFixed(2)}`);
         
         return {
             headerElement: headerCell,
             columnIndex: index + 1, // +1 to account for first column
             score: score,
-            date: date,
             originalIndex: index
         };
     });
     
-    // Sort by score (descending), then by date (ascending for chronological order)
+    // Sort by score (descending), maintaining original order for equal scores
     columnData.sort((a, b) => {
         if (Math.abs(a.score - b.score) > 0.01) {
             return b.score - a.score; // Higher score first
         }
-        return a.date - b.date; // Earlier date first for equal scores
+        return a.originalIndex - b.originalIndex; // Maintain original order for equal scores
     });
     
     console.info('Sorted columns:', columnData.map((c, i) => 
-        `Position ${i}: score=${c.score.toFixed(2)}, date=${c.date.toLocaleDateString()}`
+        `Position ${i}: score=${c.score.toFixed(2)}`
     ));
     
     // Reorder columns in the DOM
