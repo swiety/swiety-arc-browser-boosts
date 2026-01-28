@@ -50,18 +50,14 @@ function parseDateAdded() {
     return null !== result ? result[1] : null;
 }
 
+const MAP_ID = '#sMap';
+
 function parseLocationUrl() {
     let noAddress = document.querySelector("#static-map-container > div.no-show-address-feedback");
     if (null != noAddress) {
         return null;
     }
-    // document.querySelector("#sMap").src
-    // src="https://maps.googleapis.com/maps/api/staticmap?
-    // size=742x330&
-    // center=37.88488790%2C-0.75529410&
-    // ...
-    // https://www.google.com/maps/place/37.88488790%2C-0.75529410
-    let mapSrc = document.querySelector("#sMap").src;
+    let mapSrc = document.querySelector(MAP_ID).src;
     let mapCenter = URL.parse(mapSrc).searchParams.get("center");
     return `https://www.google.com/maps/place/${encodeURIComponent(mapCenter)}`;
 }
@@ -141,8 +137,10 @@ function parseIdealistaOffer() {
 function ensureMapVisible() {
     console.log("Scrolluję w dół żeby zobaczyć mapę");
     window.scrollTo(0, document.body.scrollHeight);
-    waitForElement("#sMap", (element) => {
-        console.log('Map rendered:', element);
+    waitForElement("#sMap, .deactivated-detail", (element) => { // await map or deactivated offer
+        if (MAP_ID === element.id) {
+            console.log('Map rendered:', element);
+        }
         window.scrollTo(0, 0);
     }, () => {
         window.scrollTo(0, document.body.scrollHeight);
@@ -177,7 +175,5 @@ function fetchPhoneNumber() {
     }
     addCopyToClipboardButton();
 }
-
-
 
 window.addEventListener('load', fetchPhoneNumber);
