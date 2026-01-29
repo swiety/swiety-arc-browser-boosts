@@ -149,6 +149,10 @@ function ensureMapVisible() {
 
 function addCopyToClipboardButton() {
     let parent = document.getElementById('side-content');
+    if (null === parent) {
+        console.log('Rejecting to add "Copy to clipboard" button, deleted offer?');
+        return;
+    }
     let button = document.createElement('button');
     button.innerHTML = 'Copy to clipboard';
     parent.insertBefore(button, parent.firstChild);
